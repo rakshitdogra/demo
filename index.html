@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jharkhand Innovation Pipeline — Interactive Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FAFAFA; --surface:#FFFFFF; --surface-2:#F1F1F4; --surface-3:#E9E9EE;
+    --ink:#101014; --ink-soft:#65656F; --line:#E6E6EB;
+    --accent:#3B3BFF; --accent-ink:#2626CC; --accent-soft:#EAEAFF;
+    --coral:#FF5A3C; --coral-soft:#FFE7E1;
+    --lime:#B6FF3B; --lime-soft:#EEFFD1;
+    --dark:#0E0E12; --dark-2:#17171D;
+    --good:#1FAE64; --good-soft:#E4F8ED;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--bg); color:var(--ink); font-family:'Manrope',sans-serif; font-size:15px; line-height:1.55; -webkit-font-smoothing:antialiased;}
+  h1,h2,h3,h4{font-family:'Space Grotesk',sans-serif; font-weight:600; margin:0; letter-spacing:-0.01em;}
+  p{margin:0; color:var(--ink-soft);}
+  button{font-family:'Manrope',sans-serif; cursor:pointer;}
+  ::selection{background:var(--accent); color:#fff;}
+
+  /* ---------- shell ---------- */
+  .topbar{position:sticky; top:0; z-index:60; background:rgba(250,250,250,0.9); backdrop-filter:blur(10px); border-bottom:1px solid var(--line); padding:14px 28px; display:flex; align-items:center; justify-content:space-between; gap:20px; flex-wrap:wrap;}
+  .brand{display:flex; align-items:center; gap:9px; font-family:'Space Grotesk'; font-weight:600; font-size:15px; white-space:nowrap;}
+  .brand .dot{width:9px; height:9px; background:var(--accent); border-radius:2px; transform:rotate(45deg);}
+  .roletabs{display:flex; gap:4px; background:var(--surface-2); padding:4px; border-radius:12px;}
+  .roletabs button{border:none; background:transparent; padding:9px 15px; border-radius:9px; font-size:13px; font-weight:700; color:var(--ink-soft); display:flex; align-items:center; gap:7px; transition:.15s;}
+  .roletabs button svg{width:15px; height:15px; stroke:currentColor; fill:none; stroke-width:1.8;}
+  .roletabs button.active{background:var(--ink); color:#fff;}
+  .reset-btn{border:1px solid var(--line); background:var(--surface); border-radius:9px; padding:9px 14px; font-size:12.5px; font-weight:700; color:var(--ink-soft);}
+  .reset-btn:hover{border-color:var(--ink);}
+
+  main{max-width:1180px; margin:0 auto; padding:36px 28px 90px;}
+  .view{display:none; animation:fade .25s ease;}
+  .view.active{display:block;}
+  @keyframes fade{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);}}
+
+  .head-row{display:flex; justify-content:space-between; align-items:flex-end; gap:20px; margin-bottom:28px; flex-wrap:wrap;}
+  .head-row h2{font-size:28px;}
+  .head-row .desc{max-width:56ch; margin-top:6px; font-size:14px;}
+  .pill{display:inline-flex; align-items:center; gap:7px; background:var(--accent-soft); color:var(--accent-ink); font-size:12px; font-weight:700; padding:5px 12px; border-radius:100px; margin-bottom:14px;}
+  .pill .d{width:6px; height:6px; border-radius:50%; background:var(--accent);}
+
+  /* ---------- stat grid ---------- */
+  .stats{display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:32px;}
+  .stat{background:var(--surface-2); border-radius:16px; padding:20px 20px;}
+  .stat.dark{background:var(--ink); color:#fff;}
+  .stat.accent{background:var(--accent); color:#fff;}
+  .stat.lime{background:var(--lime);}
+  .stat .n{font-family:'Space Grotesk'; font-size:28px; font-weight:700;}
+  .stat .l{font-size:12px; margin-top:4px; color:var(--ink-soft);}
+  .stat.dark .l{color:rgba(255,255,255,0.6);} .stat.accent .l{color:rgba(255,255,255,0.75);} .stat.lime .l{color:rgba(16,16,20,0.65);}
+
+  /* ---------- layout helpers ---------- */
+  .cols{display:grid; grid-template-columns:1.3fr 0.9fr; gap:20px; align-items:start;}
+  .card{background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:22px;}
+  .card h3{font-size:16px; margin-bottom:14px;}
+  .section-gap{margin-top:34px;}
+
+  /* ---------- forms ---------- */
+  label{display:block; font-size:12.5px; font-weight:700; color:var(--ink-soft); margin-bottom:6px;}
+  input[type=text], textarea, select{
+    width:100%; border:1px solid var(--line); background:var(--surface-2); border-radius:10px;
+    padding:11px 13px; font-family:'Manrope'; font-size:13.5px; color:var(--ink); margin-bottom:14px;
+  }
+  textarea{resize:vertical; min-height:80px;}
+  input:focus, textarea:focus, select:focus{outline:2px solid var(--accent); outline-offset:1px; background:var(--surface);}
+  .btn{border:none; border-radius:10px; padding:12px 20px; font-size:13.5px; font-weight:700; display:inline-flex; align-items:center; gap:8px;}
+  .btn-primary{background:var(--ink); color:#fff;}
+  .btn-primary:hover{background:#000;}
+  .btn-accent{background:var(--accent); color:#fff;}
+  .btn-coral{background:var(--coral); color:#fff;}
+  .btn-ghost{background:var(--surface-2); color:var(--ink);}
+  .btn-ghost:hover{background:var(--surface-3);}
+  .btn:disabled{opacity:.4; cursor:not-allowed;}
+  .btn-sm{padding:8px 14px; font-size:12.5px; border-radius:8px;}
+  .row-actions{display:flex; gap:8px; flex-wrap:wrap;}
+  .chiprow{display:flex; gap:7px; flex-wrap:wrap; margin-bottom:14px;}
+  .chip{border:1px solid var(--line); border-radius:100px; padding:6px 13px; font-size:12px; color:var(--ink-soft); background:var(--surface);}
+  .chip.on{background:var(--ink); color:#fff; border-color:var(--ink);}
+
+  /* ---------- badges ---------- */
+  .badge{display:inline-block; padding:4px 10px; border-radius:100px; font-size:11px; font-weight:700; white-space:nowrap;}
+  .b-submitted{background:var(--surface-3); color:var(--ink-soft);}
+  .b-review{background:#FFF3D6; color:#946200;}
+  .b-validated{background:var(--accent-soft); color:var(--accent-ink);}
+  .b-matched{background:#E4E4FF; color:#3B3BFF;}
+  .b-development{background:var(--coral-soft); color:var(--coral);}
+  .b-deployed{background:var(--good-soft); color:var(--good);}
+  .sev-high{color:var(--coral); font-weight:700;}
+  .sev-medium{color:#946200; font-weight:700;}
+  .sev-low{color:var(--good); font-weight:700;}
+
+  /* ---------- lists / rows ---------- */
+  .chal-row{border:1px solid var(--line); border-radius:14px; padding:16px 18px; margin-bottom:10px; background:var(--surface);}
+  .chal-row .top{display:flex; justify-content:space-between; gap:10px; align-items:flex-start; flex-wrap:wrap;}
+  .chal-row .title{font-family:'Space Grotesk'; font-weight:600; font-size:14.5px;}
+  .chal-row .meta{font-size:12px; color:var(--ink-soft); margin-top:4px; display:flex; gap:10px; flex-wrap:wrap;}
+  .chal-row .desc{font-size:13px; margin-top:8px;}
+  .chal-row .foot{display:flex; justify-content:space-between; align-items:center; margin-top:12px; flex-wrap:wrap; gap:10px;}
+  .empty{padding:34px 18px; text-align:center; color:var(--ink-soft); font-size:13.5px; background:var(--surface-2); border-radius:14px;}
+
+  /* ---------- timeline (citizen tracker) ---------- */
+  .tracker{display:flex; gap:0; margin-top:10px; flex-wrap:wrap;}
+  .tracker .tstep{display:flex; align-items:center; gap:6px; font-size:11px; color:var(--ink-soft); padding-right:10px;}
+  .tracker .tdot{width:9px; height:9px; border-radius:50%; background:var(--surface-3);}
+  .tracker .tstep.done .tdot{background:var(--good);}
+  .tracker .tstep.done{color:var(--ink);}
+  .tracker .tstep.now .tdot{background:var(--coral);}
+  .tracker .tstep.now{color:var(--coral); font-weight:700;}
+  .tconn{width:16px; height:1px; background:var(--line); align-self:center; margin-right:6px;}
+
+  /* ---------- match bars ---------- */
+  .match-bars{display:flex; flex-direction:column; gap:10px;}
+  .match-row{display:grid; grid-template-columns:1fr auto; gap:10px; align-items:center;}
+  .match-row .info{font-size:12.5px;}
+  .match-row .track{background:var(--surface-2); border-radius:100px; height:8px; overflow:hidden; margin-top:5px;}
+  .match-row .fill{height:100%; background:var(--accent); border-radius:100px;}
+  .match-row .pct{font-family:'JetBrains Mono'; font-size:12.5px; color:var(--ink-soft);}
+
+  /* ---------- domain bars ---------- */
+  .domain-list{display:flex; flex-direction:column; gap:10px;}
+  .domain-row{display:grid; grid-template-columns:110px 1fr 34px; align-items:center; gap:10px; font-size:12.5px;}
+  .domain-row .track{background:var(--surface-2); border-radius:100px; height:12px; overflow:hidden;}
+  .domain-row .fill{height:100%; background:var(--accent); border-radius:100px;}
+
+  /* ---------- table ---------- */
+  table{width:100%; border-collapse:collapse; font-size:13px;}
+  th{text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:.03em; color:var(--ink-soft); padding:9px 10px; border-bottom:1px solid var(--line);}
+  td{padding:11px 10px; border-bottom:1px solid var(--line); vertical-align:middle;}
+  tr:hover td{background:var(--surface-2);}
+
+  /* ---------- team ---------- */
+  .team{display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;}
+  .avatar{display:flex; align-items:center; gap:8px; background:var(--surface-2); border-radius:100px; padding:5px 12px 5px 5px; font-size:12px;}
+  .avatar .ci{width:22px; height:22px; border-radius:50%; background:var(--accent); color:#fff; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:700;}
+
+  .toast{position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--ink); color:#fff; padding:13px 22px; border-radius:12px; font-size:13.5px; font-weight:600; opacity:0; pointer-events:none; transition:.25s; z-index:100; display:flex; align-items:center; gap:10px;}
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+  .toast .tdot2{width:7px; height:7px; border-radius:50%; background:var(--lime);}
+
+  select#uniSelect{max-width:280px;}
+
+  @media (max-width:900px){
+    .cols{grid-template-columns:1fr;}
+    .stats{grid-template-columns:1fr 1fr;}
+    .roletabs{overflow-x:auto; max-width:100%;}
+    .roletabs button span{display:none;}
+    .roletabs button{padding:10px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand"><span class="dot"></span>Jharkhand Innovation Pipeline</div>
+  <div class="roletabs" id="roleTabs"></div>
+  <button class="reset-btn" onclick="resetDemo()">↺ Reset demo data</button>
+</div>
+
+<main>
+  <div id="citizenView" class="view"></div>
+  <div id="govView" class="view"></div>
+  <div id="uniView" class="view"></div>
+  <div id="industryView" class="view"></div>
+  <div id="adminView" class="view"></div>
+</main>
+
+<div class="toast" id="toast"><span class="tdot2"></span><span id="toastMsg"></span></div>
+
+<script>
+/* =====================================================================
+   DEMO DATA
+===================================================================== */
+
+const DOMAINS = {
+  water: {label:"Water & Sanitation", keywords:["water","handpump","drink","contaminat","sanitation","borewell","pipeline","tap"]},
+  health: {label:"Healthcare", keywords:["sick","disease","hospital","health","medicine","doctor","clinic","fever"]},
+  agriculture: {label:"Agriculture", keywords:["crop","farm","irrigation","soil","seed","farmer","harvest","pest"]},
+  education: {label:"Education", keywords:["school","teacher","student","classroom","education","textbook","exam"]},
+  infrastructure: {label:"Infrastructure", keywords:["road","bridge","electricity","streetlight","building","power","transport"]},
+  environment: {label:"Environment", keywords:["pollution","forest","waste","garbage","river","tree","dump","deforest"]}
+};
+
+const UNIVERSITIES = [
+  {id:"uniA", name:"Ranchi Institute of Technology", tags:["water","agriculture","environment"], labs:["IoT Research Lab","Soil Science Dept","Water Resources Cell"]},
+  {id:"uniB", name:"Birla Institute Jharkhand", tags:["health","education"], labs:["Biomedical Engineering","Public Health Unit"]},
+  {id:"uniC", name:"NIT Jamshedpur", tags:["infrastructure","environment"], labs:["Civil Engineering Dept","Structural Testing Lab"]},
+  {id:"uniD", name:"Central University of Jharkhand", tags:["education","agriculture"], labs:["Social Innovation Centre","Agri-Extension Unit"]}
+];
+
+const INDUSTRY_PARTNERS = [
+  {id:"indA", name:"Tata Rural Ventures", focus:["water","infrastructure"]},
+  {id:"indB", name:"Jharkhand AgriTech Collective", focus:["agriculture","environment"]},
+  {id:"indC", name:"Sunrise Health Systems", focus:["health","education"]}
+];
+
+const STUDENT_POOL = ["A. Kumar","P. Soren","R. Mahato","S. Tirkey","N. Oraon","V. Singh","M. Hansda","K. Devi"];
+const FACULTY_POOL = ["Dr. Anjali Verma","Dr. R. Bhattacharya","Dr. S. Munda","Dr. P. K. Sinha"];
+
+const STATUS_FLOW = ["Submitted","Under Review","Validated","Matched","In Development","Deployed"];
+
+function seedData(){
+  return [
+    mkChallenge(1,"Handpump water turns dirty every monsoon","Our village handpump water becomes cloudy and smells bad during the rainy season. Several children have fallen sick after drinking it.","Dumka",520,"Deployed",{university:"uniA",industry:"indA",impactBefore:{"Water wastage":"40%","Villages covered":"1"},impactAfter:{"Water wastage":"17%","Villages covered":"8","People benefited":"12,400","Avg. resolution":"74 days"}}),
+    mkChallenge(2,"No proper irrigation for small farm plots","Small farmers in our block don't have access to affordable irrigation, so crop yield drops sharply in dry months.","Gumla",340,"In Development",{university:"uniA",industry:"indB"}),
+    mkChallenge(3,"Streetlights missing across Ward 4","There are no functioning streetlights across four wards, making it unsafe to walk at night.","Ranchi",980,"Matched",{university:"uniC"}),
+    mkChallenge(4,"Primary school lacks basic classroom furniture","The local primary school has no desks or benches, children sit on the floor for lessons.","Simdega",210,"Validated",{}),
+    mkChallenge(5,"Frequent fever outbreaks near stagnant water","Several fever cases reported near a stagnant pond used for washing and bathing.","Khunti",450,"Under Review",{}),
+    mkChallenge(6,"Illegal waste dumping near riverbank","Garbage is regularly dumped near the riverbank, affecting water quality downstream.","East Singhbhum",610,"Submitted",{}),
+    mkChallenge(7,"Poor road connectivity to nearest market","The only road connecting our village to the market floods every year, cutting off access for weeks.","Pakur",380,"Submitted",{}),
+    mkChallenge(8,"Soil losing fertility after repeated single-crop farming","Farmers report declining soil fertility after years of growing the same crop without rotation.","Hazaribagh",290,"Validated",{})
+  ];
+}
+
+function mkChallenge(id, title, desc, district, affected, status, extra){
+  const classification = classify(title + " " + desc);
+  const c = {
+    id, title, desc, district, affected, status,
+    domain: classification.domain, severity: classification.severity, keywords: classification.matched,
+    university: extra.university || null,
+    industry: extra.industry || null,
+    team: null,
+    impactBefore: extra.impactBefore || null,
+    impactAfter: extra.impactAfter || null,
+    submittedAt: "2026-0" + (1 + (id % 8)) + "-14"
+  };
+  if(c.university) c.team = buildTeam(c.university, c.id);
+  return c;
+}
+
+/* =====================================================================
+   AI CLASSIFIER (keyword based, deterministic)
+===================================================================== */
+function classify(text){
+  const t = text.toLowerCase();
+  let best = {domain:"infrastructure", hits:0, matched:[]};
+  Object.keys(DOMAINS).forEach(key=>{
+    let hits = 0; let matched = [];
+    DOMAINS[key].keywords.forEach(k=>{
+      if(t.includes(k)){ hits++; matched.push(k); }
+    });
+    if(hits > best.hits){ best = {domain:key, hits, matched}; }
+  });
+  const severity = best.hits >= 2 ? "High" : (best.hits === 1 ? "Medium" : "Low");
+  return {domain: best.domain, severity, matched: best.matched};
+}
+
+/* deterministic pseudo-random 0-1 from a string, for stable "randomness" */
+function seededRand(str){
+  let h = 0;
+  for(let i=0;i<str.length;i++){ h = (h * 31 + str.charCodeAt(i)) >>> 0; }
+  return (h % 1000) / 1000;
+}
+
+function matchScore(challenge, uni){
+  let score = 40;
+  if(uni.tags.includes(challenge.domain)) score += 40;
+  else score += 8;
+  score += Math.round(seededRand(challenge.id + uni.id) * 14);
+  return Math.min(97, score);
+}
+
+function buildTeam(uniId, challengeId){
+  const fIdx = Math.floor(seededRand("f"+uniId+challengeId) * FACULTY_POOL.length);
+  const s1 = Math.floor(seededRand("s1"+uniId+challengeId) * STUDENT_POOL.length);
+  let s2 = Math.floor(seededRand("s2"+uniId+challengeId) * STUDENT_POOL.length);
+  if(s2 === s1) s2 = (s2 + 1) % STUDENT_POOL.length;
+  return {faculty: FACULTY_POOL[fIdx], students:[STUDENT_POOL[s1], STUDENT_POOL[s2]]};
+}
+
+function initials(name){
+  return name.replace(/^Dr\.\s*/,"").split(" ").map(p=>p[0]).slice(0,2).join("").toUpperCase();
+}
+
+/* =====================================================================
+   STATE
+===================================================================== */
+let state = {
+  role: "citizen",
+  challenges: seedData(),
+  currentUni: "uniA",
+  nextId: 100
+};
+
+function resetDemo(){
+  state.challenges = seedData();
+  state.nextId = 100;
+  showToast("Demo data reset");
+  renderAll();
+}
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  t.classList.add('show');
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(()=>t.classList.remove('show'), 2400);
+}
+
+/* =====================================================================
+   ROLE TABS
+===================================================================== */
+const ROLES = [
+  {id:"citizen", label:"Citizen", icon:'<circle cx="12" cy="8" r="3.4"/><path d="M5 20c0-4 3-6.5 7-6.5S19 16 19 20"/>'},
+  {id:"gov", label:"Government", icon:'<path d="M4 10l8-5 8 5"/><path d="M5 10v9h14v-9"/><path d="M10 19v-6h4v6"/>'},
+  {id:"uni", label:"University", icon:'<path d="M12 3l9 4.5-9 4.5-9-4.5z"/><path d="M6 10v5c0 1.7 2.7 3 6 3s6-1.3 6-3v-5"/>'},
+  {id:"industry", label:"Industry", icon:'<rect x="4" y="9" width="16" height="11" rx="1"/><path d="M9 9V6a3 3 0 016 0v3"/>'},
+  {id:"admin", label:"Admin", icon:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/>'}
+];
+
+function renderRoleTabs(){
+  const el = document.getElementById('roleTabs');
+  el.innerHTML = ROLES.map(r => `
+    <button class="${r.id===state.role?'active':''}" onclick="setRole('${r.id}')">
+      <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">${r.icon}</svg>
+      <span>${r.label}</span>
+    </button>`).join("");
+}
+
+function setRole(role){
+  state.role = role;
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById(role+'View').classList.add('active');
+  renderRoleTabs();
+  renderAll();
+}
+
+/* =====================================================================
+   SHARED HELPERS
+===================================================================== */
+function badgeClass(status){
+  return {
+    "Submitted":"b-submitted","Under Review":"b-review","Validated":"b-validated",
+    "Matched":"b-matched","In Development":"b-development","Deployed":"b-deployed"
+  }[status] || "b-submitted";
+}
+function sevClass(sev){ return sev==="High"?"sev-high":(sev==="Medium"?"sev-medium":"sev-low"); }
+function domainLabel(d){ return DOMAINS[d] ? DOMAINS[d].label : d; }
+function uniName(id){ const u = UNIVERSITIES.find(u=>u.id===id); return u?u.name:"—"; }
+function indName(id){ const i = INDUSTRY_PARTNERS.find(i=>i.id===id); return i?i.name:"—"; }
+
+function trackerHTML(status){
+  const idx = STATUS_FLOW.indexOf(status);
+  return `<div class="tracker">` + STATUS_FLOW.map((s,i)=>{
+    const cls = i < idx ? "done" : (i===idx ? "now" : "");
+    const conn = i > 0 ? '<div class="tconn"></div>' : '';
+    return conn + `<div class="tstep ${cls}"><span class="tdot"></span>${s}</div>`;
+  }).join("") + `</div>`;
+}
+
+/* =====================================================================
+   CITIZEN VIEW
+===================================================================== */
+function renderCitizen(){
+  const mine = state.challenges.filter(c=>c.id>=100 || c.id<=8); // show all for demo visibility
+  document.getElementById('citizenView').innerHTML = `
+    <div class="pill"><span class="d"></span>Citizen portal</div>
+    <div class="head-row">
+      <div><h2>Report a problem</h2><p class="desc">Describe what's wrong in your own words. The system classifies it automatically and tracks it through to a deployed solution.</p></div>
+    </div>
+
+    <div class="cols">
+      <div class="card">
+        <h3>New report</h3>
+        <label>Title</label>
+        <input type="text" id="f_title" placeholder="e.g. No drinking water supply in our ward">
+        <label>Description</label>
+        <textarea id="f_desc" placeholder="Explain what's happening, who is affected, and how often it occurs."></textarea>
+        <label>District</label>
+        <input type="text" id="f_district" placeholder="e.g. Dumka">
+        <label>Approximately how many people are affected?</label>
+        <input type="text" id="f_affected" placeholder="e.g. 400">
+        <button class="btn btn-coral" onclick="submitCitizenReport()">Submit report</button>
+      </div>
+      <div class="card" id="classifyPreview">
+        <h3>Live AI preview</h3>
+        <p style="font-size:13px;">Start typing a title or description — the classifier updates as you type.</p>
+      </div>
+    </div>
+
+    <div class="section-gap">
+      <h3 style="margin-bottom:14px;">My reports</h3>
+      <div id="myReportsList"></div>
+    </div>
+  `;
+
+  document.getElementById('f_title').addEventListener('input', updateClassifyPreview);
+  document.getElementById('f_desc').addEventListener('input', updateClassifyPreview);
+
+  const list = document.getElementById('myReportsList');
+  const items = state.challenges.filter(c=>c.id>=100).concat(state.challenges.filter(c=>c.id<100));
+  if(items.length===0){
+    list.innerHTML = `<div class="empty">No reports yet. Submit one above to see it tracked here.</div>`;
+  } else {
+    list.innerHTML = items.map(c=>`
+      <div class="chal-row">
+        <div class="top">
+          <div>
+            <div class="title">${c.title}</div>
+            <div class="meta"><span>${c.district}</span><span>·</span><span>${domainLabel(c.domain)}</span><span>·</span><span class="${sevClass(c.severity)}">${c.severity} severity</span></div>
+          </div>
+          <span class="badge ${badgeClass(c.status)}">${c.status}</span>
+        </div>
+        ${trackerHTML(c.status)}
+      </div>`).join("");
+  }
+}
+
+function updateClassifyPreview(){
+  const title = document.getElementById('f_title').value;
+  const desc = document.getElementById('f_desc').value;
+  const text = title + " " + desc;
+  const box = document.getElementById('classifyPreview');
+  if(text.trim().length < 4){
+    box.innerHTML = `<h3>Live AI preview</h3><p style="font-size:13px;">Start typing a title or description — the classifier updates as you type.</p>`;
+    return;
+  }
+  const result = classify(text);
+  box.innerHTML = `
+    <h3>Live AI preview</h3>
+    <div style="display:grid; grid-template-columns:auto 1fr; gap:6px 14px; font-size:13px;">
+      <span style="font-family:'JetBrains Mono'; font-size:10.5px; color:var(--accent-ink); align-self:center;">DOMAIN</span><span>${domainLabel(result.domain)}</span>
+      <span style="font-family:'JetBrains Mono'; font-size:10.5px; color:var(--accent-ink); align-self:center;">SEVERITY</span><span class="${sevClass(result.severity)}">${result.severity}</span>
+      <span style="font-family:'JetBrains Mono'; font-size:10.5px; color:var(--accent-ink); align-self:center;">KEYWORDS</span><span>${result.matched.length? result.matched.join(", ") : "none detected yet"}</span>
+    </div>`;
+}
+
+function submitCitizenReport(){
+  const title = document.getElementById('f_title').value.trim();
+  const desc = document.getElementById('f_desc').value.trim();
+  const district = document.getElementById('f_district').value.trim() || "Unspecified";
+  const affected = document.getElementById('f_affected').value.trim() || "—";
+  if(!title){ showToast("Add a title before submitting"); return; }
+  const classification = classify(title + " " + desc);
+  const newC = {
+    id: state.nextId++, title, desc, district, affected, status:"Submitted",
+    domain: classification.domain, severity: classification.severity, keywords: classification.matched,
+    university:null, industry:null, team:null, impactBefore:null, impactAfter:null,
+    submittedAt: "just now"
+  };
+  state.challenges.unshift(newC);
+  showToast("Report submitted — AI classified it as " + domainLabel(newC.domain));
+  document.getElementById('f_title').value = "";
+  document.getElementById('f_desc').value = "";
+  document.getElementById('f_district').value = "";
+  document.getElementById('f_affected').value = "";
+  renderAll();
+}
+
+/* =====================================================================
+   GOVERNMENT VIEW
+===================================================================== */
+function renderGov(){
+  const all = state.challenges;
+  const counts = {
+    total: all.length,
+    validated: all.filter(c=>STATUS_FLOW.indexOf(c.status) >= STATUS_FLOW.indexOf("Validated")).length,
+    development: all.filter(c=>c.status==="In Development").length,
+    deployed: all.filter(c=>c.status==="Deployed").length
+  };
+  const queue = all.filter(c=>c.status==="Submitted" || c.status==="Under Review");
+
+  const domainCounts = {};
+  Object.keys(DOMAINS).forEach(d=>domainCounts[d]=0);
+  all.forEach(c=>domainCounts[c.domain] = (domainCounts[c.domain]||0)+1);
+  const maxDomain = Math.max(1, ...Object.values(domainCounts));
+
+  document.getElementById('govView').innerHTML = `
+    <div class="pill"><span class="d"></span>Government dashboard</div>
+    <div class="head-row"><div><h2>State-level overview</h2><p class="desc">Live counts computed from every submitted challenge in the system.</p></div></div>
+
+    <div class="stats">
+      <div class="stat dark"><div class="n">${counts.total}</div><div class="l">total challenges</div></div>
+      <div class="stat"><div class="n">${counts.validated}</div><div class="l">validated or further</div></div>
+      <div class="stat"><div class="n">${counts.development}</div><div class="l">in development</div></div>
+      <div class="stat lime"><div class="n">${counts.deployed}</div><div class="l">deployed</div></div>
+    </div>
+
+    <div class="cols">
+      <div class="card">
+        <h3>Review queue (${queue.length})</h3>
+        <div id="reviewQueue"></div>
+      </div>
+      <div class="card">
+        <h3>Challenges by domain</h3>
+        <div class="domain-list">
+          ${Object.keys(DOMAINS).map(d=>`
+            <div class="domain-row">
+              <span>${DOMAINS[d].label}</span>
+              <div class="track"><div class="fill" style="width:${(domainCounts[d]/maxDomain*100)}%"></div></div>
+              <span>${domainCounts[d]}</span>
+            </div>`).join("")}
+        </div>
+      </div>
+    </div>
+  `;
+
+  const qEl = document.getElementById('reviewQueue');
+  if(queue.length===0){
+    qEl.innerHTML = `<div class="empty">Queue is clear — nothing waiting on validation.</div>`;
+  } else {
+    qEl.innerHTML = queue.map(c=>`
+      <div class="chal-row">
+        <div class="top">
+          <div>
+            <div class="title">${c.title}</div>
+            <div class="meta"><span>${c.district}</span><span>·</span><span>${domainLabel(c.domain)}</span><span>·</span><span class="${sevClass(c.severity)}">${c.severity}</span></div>
+          </div>
+          <span class="badge ${badgeClass(c.status)}">${c.status}</span>
+        </div>
+        <div class="desc">${c.desc || "No description provided."}</div>
+        <div class="foot">
+          <div class="row-actions">
+            ${c.status==="Submitted" ? `<button class="btn btn-ghost btn-sm" onclick="advanceStatus(${c.id},'Under Review')">Mark under review</button>` : ""}
+            <button class="btn btn-primary btn-sm" onclick="advanceStatus(${c.id},'Validated')">Validate &amp; publish</button>
+          </div>
+        </div>
+      </div>`).join("");
+  }
+}
+
+function advanceStatus(id, status){
+  const c = state.challenges.find(c=>c.id===id);
+  if(!c) return;
+  c.status = status;
+  showToast(`"${c.title.slice(0,30)}${c.title.length>30?'…':''}" → ${status}`);
+  renderAll();
+}
+
+/* =====================================================================
+   UNIVERSITY VIEW
+===================================================================== */
+function renderUni(){
+  const uni = UNIVERSITIES.find(u=>u.id===state.currentUni);
+  const validated = state.challenges.filter(c=>c.status==="Validated");
+  const scored = validated.map(c=>({c, score: matchScore(c, uni)})).sort((a,b)=>b.score-a.score);
+  const mine = state.challenges.filter(c=>c.university===uni.id);
+
+  document.getElementById('uniView').innerHTML = `
+    <div class="pill"><span class="d"></span>University dashboard</div>
+    <div class="head-row">
+      <div><h2>Recommended challenges</h2><p class="desc">Ranked by fit against this institution's capability profile.</p></div>
+      <div>
+        <label style="margin-bottom:6px;">Viewing as</label>
+        <select id="uniSelect" onchange="state.currentUni=this.value; renderUni();">
+          ${UNIVERSITIES.map(u=>`<option value="${u.id}" ${u.id===uni.id?'selected':''}>${u.name}</option>`).join("")}
+        </select>
+      </div>
+    </div>
+
+    <div class="cols">
+      <div class="card">
+        <h3>Open matches</h3>
+        <div id="uniMatches"></div>
+      </div>
+      <div class="card">
+        <h3>${uni.name}</h3>
+        <p style="font-size:13px; margin-bottom:12px;">Capability profile</p>
+        <div class="chiprow">${uni.tags.map(t=>`<span class="chip on">${domainLabel(t)}</span>`).join("")}</div>
+        <div style="font-size:12.5px; color:var(--ink-soft); display:flex; flex-direction:column; gap:6px;">
+          ${uni.labs.map(l=>`<div>✓ ${l}</div>`).join("")}
+        </div>
+      </div>
+    </div>
+
+    <div class="section-gap">
+      <h3 style="margin-bottom:14px;">Active projects (${mine.length})</h3>
+      <div id="uniProjects"></div>
+    </div>
+  `;
+
+  const mEl = document.getElementById('uniMatches');
+  if(scored.length===0){
+    mEl.innerHTML = `<div class="empty">No validated challenges waiting for a match right now.</div>`;
+  } else {
+    mEl.innerHTML = scored.map(({c,score})=>`
+      <div class="chal-row">
+        <div class="top">
+          <div>
+            <div class="title">${c.title}</div>
+            <div class="meta"><span>${c.district}</span><span>·</span><span>${domainLabel(c.domain)}</span></div>
+          </div>
+          <span class="badge ${badgeClass(c.status)}">${c.status}</span>
+        </div>
+        <div class="match-row" style="margin-top:10px;">
+          <div class="info">Match score<div class="track"><div class="fill" style="width:${score}%"></div></div></div>
+          <span class="pct">${score}%</span>
+        </div>
+        <div class="foot">
+          <button class="btn btn-accent btn-sm" onclick="acceptChallenge(${c.id})">Accept challenge</button>
+        </div>
+      </div>`).join("");
+  }
+
+  const pEl = document.getElementById('uniProjects');
+  if(mine.length===0){
+    pEl.innerHTML = `<div class="empty">No active projects yet for this institution.</div>`;
+  } else {
+    pEl.innerHTML = mine.map(c=>`
+      <div class="chal-row">
+        <div class="top">
+          <div>
+            <div class="title">${c.title}</div>
+            <div class="meta"><span>${c.district}</span><span>·</span><span>${domainLabel(c.domain)}</span></div>
+          </div>
+          <span class="badge ${badgeClass(c.status)}">${c.status}</span>
+        </div>
+        ${c.team ? `
+          <div class="team">
+            <div class="avatar"><span class="ci">${initials(c.team.faculty)}</span>${c.team.faculty} (mentor)</div>
+            ${c.team.students.map(s=>`<div class="avatar"><span class="ci">${initials(s)}</span>${s}</div>`).join("")}
+          </div>` : ""}
+        <div class="foot">
+          ${c.status==="Matched" ? `<button class="btn btn-primary btn-sm" onclick="advanceStatus(${c.id},'In Development')">Start development</button>` : `<span style="font-size:12px; color:var(--ink-soft);">${c.industry ? "Industry partner: "+indName(c.industry) : "Awaiting industry partner"}</span>`}
+        </div>
+      </div>`).join("");
+  }
+}
+
+function acceptChallenge(id){
+  const c = state.challenges.find(c=>c.id===id);
+  if(!c) return;
+  c.status = "Matched";
+  c.university = state.currentUni;
+  c.team = buildTeam(state.currentUni, c.id);
+  showToast(`${uniName(state.currentUni)} accepted "${c.title.slice(0,28)}${c.title.length>28?'…':''}"`);
+  renderAll();
+}
+
+/* =====================================================================
+   INDUSTRY VIEW
+===================================================================== */
+function renderIndustry(){
+  const inDev = state.challenges.filter(c=>c.status==="In Development" && !c.industry);
+  const supported = state.challenges.filter(c=>c.industry);
+
+  document.getElementById('industryView').innerHTML = `
+    <div class="pill"><span class="d"></span>Industry portal</div>
+    <div class="head-row"><div><h2>Opportunities seeking support</h2><p class="desc">Projects already matched to a university and ready for funding, hardware or manufacturing help.</p></div></div>
+
+    <div class="cols">
+      <div class="card">
+        <h3>Open opportunities (${inDev.length})</h3>
+        <div id="indOpps"></div>
+      </div>
+      <div class="card">
+        <h3>Registered partners</h3>
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          ${INDUSTRY_PARTNERS.map(p=>`
+            <div style="border:1px solid var(--line); border-radius:12px; padding:12px 14px;">
+              <div style="font-weight:600; font-size:13.5px;">${p.name}</div>
+              <div class="chiprow" style="margin-top:8px; margin-bottom:0;">${p.focus.map(f=>`<span class="chip">${domainLabel(f)}</span>`).join("")}</div>
+            </div>`).join("")}
+        </div>
+      </div>
+    </div>
+
+    <div class="section-gap">
+      <h3 style="margin-bottom:14px;">Supported projects (${supported.length})</h3>
+      <div id="indSupported"></div>
+    </div>
+  `;
+
+  const oEl = document.getElementById('indOpps');
+  if(inDev.length===0){
+    oEl.innerHTML = `<div class="empty">Nothing currently seeking industry support.</div>`;
+  } else {
+    oEl.innerHTML = inDev.map(c=>{
+      const suggestions = INDUSTRY_PARTNERS.filter(p=>p.focus.includes(c.domain));
+      const partner = suggestions[0] || INDUSTRY_PARTNERS[0];
+      return `
+      <div class="chal-row">
+        <div class="top">
+          <div>
+            <div class="title">${c.title}</div>
+            <div class="meta"><span>${c.district}</span><span>·</span><span>${domainLabel(c.domain)}</span><span>·</span><span>${uniName(c.university)}</span></div>
+          </div>
+          <span class="badge ${badgeClass(c.status)}">${c.status}</span>
+        </div>
+        <div class="foot">
+          <span style="font-size:12px; color:var(--ink-soft);">Suggested partner: ${partner.name}</span>
+          <button class="btn btn-coral btn-sm" onclick="offerSupport(${c.id}, '${partner.id}')">Offer support</button>
+        </div>
+      </div>`;
+    }).join("");
+  }
+
+  const sEl = document.getElementById('indSupported');
+  if(supported.length===0){
+    sEl.innerHTML = `<div class="empty">No supported projects yet.</div>`;
+  } else {
+    sEl.innerHTML = supported.map(c=>`
+      <div class="chal-row">
+        <div class="top">
+          <div>
+            <div class="title">${c.title}</div>
+            <div class="meta"><span>${indName(c.industry)}</span><span>·</span><span>${uniName(c.university)}</span></div>
+          </div>
+          <span class="badge ${badgeClass(c.status)}">${c.status}</span>
+        </div>
+        <div class="foot">
+          ${c.status==="In Development" ? `<button class="btn btn-primary btn-sm" onclick="deployChallenge(${c.id})">Mark deployed</button>` : `<span style="font-size:12px; color:var(--good); font-weight:700;">✓ Deployed</span>`}
+        </div>
+      </div>`).join("");
+  }
+}
+
+function offerSupport(id, partnerId){
+  const c = state.challenges.find(c=>c.id===id);
+  if(!c) return;
+  c.industry = partnerId;
+  showToast(`${indName(partnerId)} is now supporting "${c.title.slice(0,26)}${c.title.length>26?'…':''}"`);
+  renderAll();
+}
+
+function deployChallenge(id){
+  const c = state.challenges.find(c=>c.id===id);
+  if(!c) return;
+  c.status = "Deployed";
+  c.impactBefore = c.impactBefore || {"Baseline":"Not measured"};
+  c.impactAfter = c.impactAfter || {
+    "People benefited": Math.round((parseInt(c.affected)||300) * (2.5 + seededRand("imp"+c.id))).toLocaleString(),
+    "Avg. resolution": (60 + Math.round(seededRand("res"+c.id)*40)) + " days"
+  };
+  showToast(`Deployed: "${c.title.slice(0,28)}${c.title.length>28?'…':''}"`);
+  renderAll();
+}
+
+/* =====================================================================
+   ADMIN VIEW
+===================================================================== */
+function renderAdmin(){
+  const all = state.challenges;
+  document.getElementById('adminView').innerHTML = `
+    <div class="pill"><span class="d"></span>Admin console</div>
+    <div class="head-row"><div><h2>All challenges</h2><p class="desc">Full record across every stage of the pipeline — ${all.length} total.</p></div></div>
+    <div class="card" style="overflow-x:auto;">
+      <table>
+        <thead><tr><th>ID</th><th>Title</th><th>Domain</th><th>Severity</th><th>District</th><th>University</th><th>Industry</th><th>Status</th></tr></thead>
+        <tbody>
+          ${all.map(c=>`
+            <tr>
+              <td style="font-family:'JetBrains Mono'; font-size:11.5px; color:var(--ink-soft);">#${c.id}</td>
+              <td style="max-width:220px;">${c.title}</td>
+              <td>${domainLabel(c.domain)}</td>
+              <td class="${sevClass(c.severity)}">${c.severity}</td>
+              <td>${c.district}</td>
+              <td>${c.university ? uniName(c.university) : "—"}</td>
+              <td>${c.industry ? indName(c.industry) : "—"}</td>
+              <td><span class="badge ${badgeClass(c.status)}">${c.status}</span></td>
+            </tr>`).join("")}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+/* =====================================================================
+   RENDER ALL
+===================================================================== */
+function renderAll(){
+  renderCitizen();
+  renderGov();
+  renderUni();
+  renderIndustry();
+  renderAdmin();
+}
+
+renderRoleTabs();
+setRole("citizen");
+</script>
+</body>
+</html>
