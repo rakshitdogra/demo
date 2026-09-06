@@ -159,7 +159,11 @@
 <div class="topbar">
   <div class="brand"><span class="dot"></span>Jharkhand Innovation Pipeline</div>
   <div class="roletabs" id="roleTabs"></div>
-  <button class="reset-btn" onclick="resetDemo()">↺ Reset demo data</button>
+  <div style="display:flex; gap:8px;">
+    <a class="reset-btn" href="working.html" target="_blank" rel="noopener" style="text-decoration:none; display:inline-flex; align-items:center; gap:6px;">📄 How it works</a>
+    <a class="reset-btn" href="docs.html" target="_blank" rel="noopener" style="text-decoration:none; display:inline-flex; align-items:center; gap:6px;">📄 Docs</a>
+    <button class="reset-btn" onclick="resetDemo()">↺ Reset demo data</button>
+  </div>
 </div>
 
 <main>
@@ -168,8 +172,6 @@
   <div id="uniView" class="view"></div>
   <div id="industryView" class="view"></div>
   <div id="adminView" class="view"></div>
-  <div class="view"><a href="blueprint.html">docs</a></div>
-
 </main>
 
 <div class="toast" id="toast"><span class="tdot2"></span><span id="toastMsg"></span></div>
