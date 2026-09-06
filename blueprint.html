@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jharkhand Innovation Pipeline — Platform Blueprint</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FAFAFA;
+    --surface:#FFFFFF;
+    --surface-2:#F1F1F4;
+    --ink:#101014;
+    --ink-soft:#65656F;
+    --line:#E6E6EB;
+    --accent:#3B3BFF;
+    --accent-ink:#2626CC;
+    --accent-soft:#EAEAFF;
+    --coral:#FF5A3C;
+    --coral-soft:#FFE7E1;
+    --lime:#B6FF3B;
+    --dark:#0E0E12;
+    --dark-2:#17171D;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:'Manrope', sans-serif;
+    font-size:16px; line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:600; margin:0; letter-spacing:-0.02em; color:var(--ink);
+  }
+  p{margin:0 0 1em; max-width:60ch; color:var(--ink-soft);}
+  ::selection{background:var(--accent); color:#fff;}
+  img,svg{display:block;}
+
+  /* ---------- top bar ---------- */
+  .topbar{
+    position:sticky; top:0; z-index:50;
+    background:rgba(250,250,250,0.86); backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+    display:flex; align-items:center; justify-content:space-between;
+    padding:14px 32px;
+  }
+  .topbar .brand{display:flex; align-items:center; gap:10px; font-family:'Space Grotesk'; font-weight:600; font-size:15px;}
+  .topbar .brand .dot{width:9px; height:9px; border-radius:2px; background:var(--accent); transform:rotate(45deg);}
+  .topbar nav{display:flex; gap:26px;}
+  .topbar nav a{color:var(--ink-soft); text-decoration:none; font-size:13.5px; font-weight:600; transition:color .15s;}
+  .topbar nav a:hover{color:var(--ink);}
+  .topbar .menu-btn{display:none; background:none; border:1px solid var(--line); border-radius:8px; padding:7px 12px; font-size:13px; font-family:'Manrope'; font-weight:600; color:var(--ink);}
+  .progress{position:sticky; top:49px; z-index:49; height:2px; background:var(--line);}
+  .progress .bar{height:100%; width:0%; background:var(--accent);}
+
+  /* ---------- dot nav ---------- */
+  .dotnav{position:fixed; right:26px; top:50%; transform:translateY(-50%); z-index:40; display:flex; flex-direction:column; gap:14px;}
+  .dotnav a{width:8px; height:8px; border-radius:50%; background:var(--line); position:relative; transition:.2s;}
+  .dotnav a.active{background:var(--accent); transform:scale(1.4);}
+  .dotnav a span{
+    position:absolute; right:18px; top:50%; transform:translateY(-50%);
+    background:var(--dark); color:#fff; font-size:11.5px; padding:4px 9px; border-radius:6px;
+    white-space:nowrap; opacity:0; pointer-events:none; transition:.15s; font-weight:600;
+  }
+  .dotnav a:hover span{opacity:1;}
+  @media (max-width:1200px){.dotnav{display:none;}}
+
+  /* ---------- section shell ---------- */
+  main{max-width:1180px; margin:0 auto; padding:0 32px;}
+  section{padding:104px 0; border-bottom:1px solid var(--line);}
+  section:last-of-type{border-bottom:none;}
+  .pill{
+    display:inline-flex; align-items:center; gap:7px; background:var(--accent-soft); color:var(--accent-ink);
+    font-size:12.5px; font-weight:700; padding:6px 13px; border-radius:100px; margin-bottom:22px;
+  }
+  .pill .d{width:6px; height:6px; border-radius:50%; background:var(--accent);}
+  h2.h{font-size:clamp(28px,3.4vw,42px); max-width:16ch; line-height:1.08;}
+  .sub{font-size:17px; margin-top:18px; max-width:58ch;}
+
+  /* ---------- hero ---------- */
+  .hero{padding:88px 0 70px; border-bottom:1px solid var(--line);}
+  .hero h1{font-size:clamp(42px,6.4vw,78px); line-height:0.98; max-width:15ch;}
+  .hero .sub{font-size:19px; color:var(--ink); margin-top:26px; max-width:52ch;}
+  .stat-row{display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-top:56px;}
+  .stat-row .cell{background:var(--surface-2); border-radius:16px; padding:22px 20px;}
+  .stat-row .cell:nth-child(2){background:var(--accent); color:#fff;}
+  .stat-row .cell:nth-child(2) .n{color:#fff;} .stat-row .cell:nth-child(2) .l{color:rgba(255,255,255,0.75);}
+  .stat-row .n{font-family:'Space Grotesk'; font-size:32px; font-weight:700;}
+  .stat-row .l{font-size:13px; color:var(--ink-soft); margin-top:4px;}
+
+  /* ---------- shift ---------- */
+  .shift{display:grid; grid-template-columns:1fr 44px 1fr; gap:0; margin-top:48px; align-items:stretch;}
+  .shift-card{border-radius:20px; padding:28px 26px;}
+  .shift-card.before{background:var(--surface-2);}
+  .shift-card.after{background:var(--ink); color:#fff;}
+  .shift-card .tag{font-size:12px; font-weight:700; color:var(--ink-soft); margin-bottom:18px;}
+  .shift-card.after .tag{color:rgba(255,255,255,0.55);}
+  .flow-step{padding:12px 14px; border-radius:10px; font-size:13.5px; margin-bottom:8px; background:#fff;}
+  .shift-card.after .flow-step{background:rgba(255,255,255,0.08); color:#fff;}
+  .shift-mid{display:flex; align-items:center; justify-content:center; font-family:'Space Grotesk'; color:var(--ink-soft); font-size:14px;}
+
+  /* ---------- roles bento ---------- */
+  .bento{display:grid; grid-template-columns:repeat(5,1fr); gap:14px; margin-top:48px;}
+  .role{background:var(--surface-2); border-radius:18px; padding:24px 20px; display:flex; flex-direction:column; gap:16px; min-height:180px;}
+  .role:nth-child(3){background:var(--accent); color:#fff;}
+  .role:nth-child(3) .name{color:#fff;} .role:nth-child(3) .desc{color:rgba(255,255,255,0.78);} .role:nth-child(3) .ibadge{background:rgba(255,255,255,0.18);}
+  .role .ibadge{width:38px; height:38px; border-radius:10px; background:#fff; display:flex; align-items:center; justify-content:center;}
+  .role .ibadge svg{width:20px; height:20px; stroke:var(--ink); fill:none; stroke-width:1.8;}
+  .role:nth-child(3) .ibadge svg{stroke:#fff;}
+  .role .name{font-family:'Space Grotesk'; font-weight:600; font-size:16px;}
+  .role .desc{font-size:13px; color:var(--ink-soft); line-height:1.5;}
+
+  /* ---------- lifecycle ---------- */
+  .lifecycle{margin-top:56px; display:grid; grid-template-columns:44px 1fr; gap:0 22px;}
+  .lc-num{display:flex; flex-direction:column; align-items:center;}
+  .lc-num .c{width:34px; height:34px; border-radius:50%; background:var(--ink); color:#fff; font-family:'Space Grotesk'; font-size:13px; font-weight:600; display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+  .lc-num .l{flex:1; width:2px; background:var(--line); margin:4px 0;}
+  .lc-row:last-child .lc-num .l{display:none;}
+  .lc-row{display:contents;}
+  .lc-body{padding-bottom:38px;}
+  .lc-body .t{font-family:'Space Grotesk'; font-size:19px; font-weight:600; margin-bottom:5px;}
+  .lc-body .d{font-size:14px; color:var(--ink-soft); max-width:56ch;}
+
+  /* ---------- citizen phone mock ---------- */
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:center;}
+  .phone{
+    background:var(--dark); border-radius:34px; padding:14px; max-width:340px; margin:0 auto;
+    box-shadow:0 30px 60px -30px rgba(16,16,20,0.4);
+  }
+  .phone-screen{background:#fff; border-radius:22px; padding:24px 20px; min-height:420px;}
+  .phone-screen .ph-eyebrow{font-size:12px; color:var(--ink-soft); font-weight:700; margin-bottom:6px;}
+  .phone-screen h4{font-family:'Space Grotesk'; font-size:21px; margin-bottom:18px;}
+  .phone-field{background:var(--surface-2); border-radius:12px; padding:12px 14px; font-size:13px; color:var(--ink-soft); margin-bottom:10px;}
+  .phone-row{display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:16px;}
+  .phone-row .phone-field{margin-bottom:0;}
+  .phone-chips{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:22px;}
+  .phone-chips span{border:1px solid var(--line); border-radius:100px; padding:6px 12px; font-size:11.5px; color:var(--ink-soft);}
+  .phone-chips span.on{background:var(--accent); color:#fff; border-color:var(--accent);}
+  .phone-cta{background:var(--coral); color:#fff; text-align:center; padding:14px; border-radius:12px; font-weight:700; font-size:14px;}
+
+  /* ---------- AI pipeline ---------- */
+  .pipeline{display:flex; flex-wrap:wrap; gap:10px; margin-top:48px; align-items:center;}
+  .pipe-chip{background:var(--surface-2); border-radius:100px; padding:10px 18px; font-size:13px; font-weight:600;}
+  .pipe-sep{color:var(--ink-soft); font-size:15px;}
+
+  .transform{margin-top:36px; display:grid; grid-template-columns:1fr 44px 1fr; gap:0; align-items:stretch;}
+  .t-in{background:var(--surface-2); border-radius:18px; padding:26px; display:flex; align-items:center; font-family:'Space Grotesk'; font-size:17px; font-weight:500;}
+  .t-mid{display:flex; align-items:center; justify-content:center; color:var(--ink-soft);}
+  .t-out{background:var(--dark); color:#fff; border-radius:18px; padding:26px;}
+  .t-out dl{display:grid; grid-template-columns:auto 1fr; gap:5px 16px; margin:0;}
+  .t-out dt{font-family:'JetBrains Mono'; font-size:10.5px; color:var(--lime); align-self:start; padding-top:2px; letter-spacing:0.02em;}
+  .t-out dd{margin:0; font-size:13.5px; padding-bottom:8px;}
+
+  /* ---------- languages ---------- */
+  .lang-row{display:flex; flex-wrap:wrap; gap:10px; margin-top:44px;}
+  .lang-row span{
+    font-family:'Space Grotesk'; font-size:14.5px; font-weight:600; padding:10px 20px; border-radius:100px;
+  }
+  .lang-row span:nth-child(1){background:var(--accent-soft); color:var(--accent-ink);}
+  .lang-row span:nth-child(2){background:var(--coral-soft); color:var(--coral);}
+  .lang-row span:nth-child(3){background:var(--surface-2); color:var(--ink);}
+  .lang-row span:nth-child(4){background:var(--accent); color:#fff;}
+  .lang-row span:nth-child(5){background:var(--surface-2); color:var(--ink);}
+  .lang-row span:nth-child(6){background:var(--coral-soft); color:var(--coral);}
+  .lang-row span:nth-child(7){background:var(--accent-soft); color:var(--accent-ink);}
+
+  /* ---------- duplicates ---------- */
+  .merge{margin-top:48px; display:grid; grid-template-columns:1fr 50px 1fr; align-items:center; gap:0;}
+  .merge .reports{display:flex; flex-direction:column; gap:8px;}
+  .merge .r{background:var(--surface-2); border-radius:10px; padding:10px 14px; font-size:12.8px; display:flex; justify-content:space-between; color:var(--ink-soft);}
+  .merge .m-arrow{text-align:center; color:var(--ink-soft); font-size:20px;}
+  .merge .master{background:var(--accent); color:#fff; border-radius:20px; padding:30px; text-align:center;}
+  .merge .master .big{font-family:'Space Grotesk'; font-size:30px; font-weight:700;}
+  .merge .master .cap{font-size:12.5px; opacity:.82; margin-top:8px;}
+
+  /* ---------- matching ---------- */
+  .weight-bar{margin-top:26px; display:flex; height:34px; border-radius:10px; overflow:hidden; max-width:520px;}
+  .weight-bar div{display:flex; align-items:center; justify-content:center; font-size:10.5px; font-weight:700; color:#fff;}
+  .weight-legend{display:flex; flex-wrap:wrap; gap:10px 18px; margin-top:16px; max-width:520px;}
+  .weight-legend .li{display:flex; align-items:center; gap:7px; font-size:12.5px; color:var(--ink-soft);}
+  .weight-legend .sw{width:9px; height:9px; border-radius:3px;}
+
+  .match-bars{margin-top:14px; display:flex; flex-direction:column; gap:14px; max-width:480px;}
+  .match-row{display:grid; grid-template-columns:120px 1fr 44px; align-items:center; gap:12px;}
+  .match-row .u{font-size:13.5px; font-weight:600;}
+  .match-row .track{background:var(--surface-2); border-radius:100px; height:10px; overflow:hidden;}
+  .match-row .fill{height:100%; border-radius:100px; background:var(--accent);}
+  .match-row .p{font-family:'JetBrains Mono'; font-size:12.5px; text-align:right; color:var(--ink-soft);}
+  .why{margin-top:24px; background:var(--surface-2); border-radius:16px; padding:22px 24px; max-width:400px;}
+  .why .t{font-family:'Space Grotesk'; font-weight:600; font-size:14.5px; margin-bottom:12px;}
+  .why ul{margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:7px;}
+  .why li{font-size:13px; color:var(--ink-soft); display:flex; gap:8px;}
+  .why li::before{content:"→"; color:var(--accent); font-weight:700;}
+
+  /* ---------- gov dashboard ---------- */
+  .stat-bento{display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-top:48px;}
+  .stat-bento .c{border-radius:18px; padding:24px 22px;}
+  .stat-bento .c:nth-child(1){background:var(--ink); color:#fff;}
+  .stat-bento .c:nth-child(2){background:var(--surface-2);}
+  .stat-bento .c:nth-child(3){background:var(--surface-2);}
+  .stat-bento .c:nth-child(4){background:var(--lime);}
+  .stat-bento .n{font-family:'Space Grotesk'; font-size:30px; font-weight:700;}
+  .stat-bento .l{font-size:12.5px; margin-top:6px; color:var(--ink-soft);}
+  .stat-bento .c:nth-child(1) .l{color:rgba(255,255,255,0.6);}
+  .stat-bento .c:nth-child(4) .l{color:rgba(16,16,20,0.65);}
+
+  .domain-list{margin-top:40px; display:flex; flex-direction:column; gap:12px; max-width:600px;}
+  .domain-row{display:grid; grid-template-columns:120px 1fr 50px; align-items:center; gap:12px;}
+  .domain-row .n{font-size:13.5px; font-weight:600;}
+  .domain-row .track{background:var(--surface-2); border-radius:100px; height:14px; overflow:hidden;}
+  .domain-row .fill{height:100%; border-radius:100px; background:var(--accent);}
+  .domain-row .v{font-family:'JetBrains Mono'; font-size:12px; text-align:right; color:var(--ink-soft);}
+
+  .status-row{display:flex; flex-wrap:wrap; gap:8px; margin-top:40px;}
+  .status-row span{font-size:12.5px; font-weight:600; padding:9px 16px; border-radius:100px; background:var(--surface-2); color:var(--ink-soft);}
+  .status-row span.done{background:var(--ink); color:#fff;}
+  .status-row span.now{background:var(--coral); color:#fff;}
+
+  /* ---------- impact (dark) ---------- */
+  .impact-section{background:var(--dark); color:#fff; border-radius:28px; margin:104px 0; padding:70px 56px; border-bottom:none;}
+  .impact-section .pill{background:rgba(255,255,255,0.08); color:var(--lime);}
+  .impact-section .pill .d{background:var(--lime);}
+  .impact-section h2{color:#fff;}
+  .impact-section .sub{color:rgba(255,255,255,0.6);}
+  .impact-grid{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:48px;}
+  .impact-col{background:rgba(255,255,255,0.05); border-radius:18px; padding:26px 28px;}
+  .impact-col.after{background:rgba(182,255,59,0.1);}
+  .impact-col .h{font-size:12px; font-weight:700; color:rgba(255,255,255,0.5); margin-bottom:16px;}
+  .impact-col.after .h{color:var(--lime);}
+  .impact-col .m{display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.08); font-size:13.5px;}
+  .impact-col .m:last-child{border-bottom:none;}
+  .impact-col .m .v{font-family:'Space Grotesk'; font-weight:600; font-size:17px;}
+
+  /* ---------- architecture ---------- */
+  .arch{margin-top:48px; display:flex; flex-direction:column; gap:10px; max-width:640px;}
+  .arch-row{background:var(--surface-2); border-radius:16px; padding:18px 20px;}
+  .arch-row .k{font-family:'JetBrains Mono'; font-size:11px; color:var(--accent-ink); font-weight:600; margin-bottom:10px;}
+  .arch-row .items{display:flex; flex-wrap:wrap; gap:8px;}
+  .arch-row .items span{background:#fff; border-radius:8px; padding:6px 12px; font-size:12.5px; font-weight:600;}
+
+  .stack-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-top:48px;}
+  .stack-item{border-radius:16px; padding:20px; background:var(--surface-2);}
+  .stack-item .k{font-family:'JetBrains Mono'; font-size:10.5px; color:var(--accent-ink); font-weight:600; margin-bottom:8px;}
+  .stack-item .v{font-family:'Space Grotesk'; font-size:16px; font-weight:600; margin-bottom:6px;}
+  .stack-item .d{font-size:12.5px; color:var(--ink-soft);}
+
+  /* ---------- roadmap ---------- */
+  .roadmap{margin-top:56px; display:grid; grid-template-columns:repeat(4,1fr); gap:16px;}
+  .rm{border-radius:18px; padding:22px 20px; background:var(--surface-2);}
+  .rm:nth-child(1){background:var(--ink); color:#fff;}
+  .rm:nth-child(1) .p{color:rgba(255,255,255,0.55);}
+  .rm .p{font-family:'JetBrains Mono'; font-size:11px; color:var(--ink-soft); margin-bottom:10px;}
+  .rm .t{font-family:'Space Grotesk'; font-weight:600; font-size:17px; margin-bottom:12px;}
+  .rm ul{margin:0; padding-left:16px; font-size:12.5px; color:var(--ink-soft); display:flex; flex-direction:column; gap:6px;}
+  .rm:nth-child(1) ul{color:rgba(255,255,255,0.75);}
+
+  /* ---------- closing ---------- */
+  .closing-wrap{background:var(--dark); border-radius:28px; padding:80px 56px; color:#fff; margin-bottom:60px; border-bottom:none;}
+  .closing-wrap h2{color:#fff; font-size:clamp(30px,3.8vw,44px); max-width:18ch;}
+  .closing-wrap p{color:rgba(255,255,255,0.6); font-size:16.5px; max-width:58ch;}
+  .pitch-row{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:44px;}
+  .pitch{border-radius:16px; padding:24px 26px; background:rgba(255,255,255,0.05);}
+  .pitch.strong{background:rgba(182,255,59,0.1);}
+  .pitch .t{font-size:11.5px; font-weight:700; color:rgba(255,255,255,0.45); margin-bottom:10px;}
+  .pitch.strong .t{color:var(--lime);}
+  .pitch p{color:#fff; margin:0; font-size:15px;}
+  .final-line{margin-top:52px; font-family:'Space Grotesk'; font-size:22px; font-weight:500; color:#fff; max-width:42ch;}
+
+  footer{max-width:1180px; margin:0 auto; padding:30px 32px 60px; font-size:12.5px; color:var(--ink-soft); display:flex; justify-content:space-between;}
+
+  @media (max-width:980px){
+    .topbar nav{display:none;}
+    .topbar .menu-btn{display:block;}
+    main{padding:0 20px;}
+    .hero{padding-top:56px;}
+    .stat-row, .bento, .stack-grid, .roadmap, .impact-grid, .pitch-row{grid-template-columns:1fr 1fr;}
+    .grid2, .shift, .transform, .merge{grid-template-columns:1fr;}
+    .shift-mid, .t-mid{transform:rotate(90deg); padding:10px 0;}
+    .merge .m-arrow{transform:rotate(90deg);}
+    .stat-bento{grid-template-columns:1fr 1fr;}
+    .impact-section, .closing-wrap{padding:48px 26px; border-radius:20px;}
+    .phone{max-width:100%;}
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand"><span class="dot"></span>Jharkhand Innovation Pipeline</div>
+  <nav>
+    <a href="#lifecycle">Lifecycle</a>
+    <a href="#ai-engine">AI engine</a>
+    <a href="#matching">Matching</a>
+    <a href="#gov">Dashboard</a>
+    <a href="#roadmap">Roadmap</a>
+  </nav>
+  <button class="menu-btn">Menu</button>
+</div>
+<div class="progress"><div class="bar" id="progressBar"></div></div>
+
+<div class="dotnav" id="dotnav">
+  <a href="#shift" data-label="The shift"><span>The shift</span></a>
+  <a href="#ecosystem" data-label="Ecosystem"><span>Ecosystem</span></a>
+  <a href="#lifecycle" data-label="Lifecycle"><span>Lifecycle</span></a>
+  <a href="#citizen" data-label="Citizen app"><span>Citizen app</span></a>
+  <a href="#ai-engine" data-label="AI engine"><span>AI engine</span></a>
+  <a href="#language" data-label="Languages"><span>Languages</span></a>
+  <a href="#duplicates" data-label="Duplicates"><span>Duplicates</span></a>
+  <a href="#matching" data-label="Matching"><span>Matching</span></a>
+  <a href="#gov" data-label="Dashboard"><span>Dashboard</span></a>
+  <a href="#impact" data-label="Impact"><span>Impact</span></a>
+  <a href="#architecture" data-label="Architecture"><span>Architecture</span></a>
+  <a href="#roadmap" data-label="Roadmap"><span>Roadmap</span></a>
+  <a href="#close" data-label="The pitch"><span>The pitch</span></a>
+</div>
+
+<main>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="pill"><span class="d"></span>Platform blueprint</div>
+    <h1>Turn a citizen's problem into a deployed, funded solution.</h1>
+    <p class="sub">A state-level pipeline that takes a problem reported by any citizen, routes it through AI triage and government validation, matches it to the university best equipped to research it, and pulls industry in to prototype and deploy the result.</p>
+    <div class="stat-row">
+      <div class="cell"><div class="n">5</div><div class="l">connected user roles</div></div>
+      <div class="cell"><div class="n">10</div><div class="l">stages, citizen to impact</div></div>
+      <div class="cell"><div class="n">4</div><div class="l">build phases</div></div>
+      <div class="cell"><div class="n">1</div><div class="l">shared data spine</div></div>
+    </div>
+  </section>
+
+  <!-- SHIFT -->
+  <section id="shift">
+    <div class="pill"><span class="d"></span>Positioning</div>
+    <h2 class="h">Not a grievance portal wearing a new name.</h2>
+    <p class="sub">Grievance systems end at "resolved." This pipeline treats a reported problem as a research brief — something a university team can pick up, an industry partner can fund, and a district can point to as a deployed fix.</p>
+    <div class="shift">
+      <div class="shift-card before">
+        <div class="tag">WHAT ALREADY EXISTS</div>
+        <div class="flow-step">Problem reported</div>
+        <div class="flow-step">Sent to government</div>
+        <div class="flow-step">Marked resolved</div>
+      </div>
+      <div class="shift-mid">→</div>
+      <div class="shift-card after">
+        <div class="tag">WHAT THIS PLATFORM BUILDS</div>
+        <div class="flow-step">Problem reported</div>
+        <div class="flow-step">AI structures a research brief</div>
+        <div class="flow-step">University + students take it on</div>
+        <div class="flow-step">Industry funds a prototype</div>
+        <div class="flow-step">Piloted, deployed, measured</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ECOSYSTEM -->
+  <section id="ecosystem">
+    <div class="pill"><span class="d"></span>Ecosystem</div>
+    <h2 class="h">Five roles, one shared pipeline.</h2>
+    <p class="sub">Every role sees a different dashboard, but every action moves the same underlying record forward.</p>
+    <div class="bento">
+      <div class="role">
+        <div class="ibadge"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.4"/><path d="M5 20c0-4 3-6.5 7-6.5S19 16 19 20"/></svg></div>
+        <div class="name">Citizen</div><div class="desc">Reports a problem, tracks it end to end.</div>
+      </div>
+      <div class="role">
+        <div class="ibadge"><svg viewBox="0 0 24 24"><path d="M4 10l8-5 8 5"/><path d="M5 10v9h14v-9"/><path d="M10 19v-6h4v6"/></svg></div>
+        <div class="name">Government</div><div class="desc">Validates, prioritises, monitors districts.</div>
+      </div>
+      <div class="role">
+        <div class="ibadge"><svg viewBox="0 0 24 24"><path d="M12 3l9 4.5-9 4.5-9-4.5z"/><path d="M6 10v5c0 1.7 2.7 3 6 3s6-1.3 6-3v-5"/></svg></div>
+        <div class="name">University / HEI</div><div class="desc">Accepts the challenge, runs student teams.</div>
+      </div>
+      <div class="role">
+        <div class="ibadge"><svg viewBox="0 0 24 24"><rect x="4" y="9" width="16" height="11" rx="1"/><path d="M9 9V6a3 3 0 016 0v3"/></svg></div>
+        <div class="name">Industry</div><div class="desc">Mentors, funds, prototypes, deploys.</div>
+      </div>
+      <div class="role">
+        <div class="ibadge"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg></div>
+        <div class="name">Admin</div><div class="desc">Runs the ecosystem, quality and escalation.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LIFECYCLE -->
+  <section id="lifecycle">
+    <div class="pill"><span class="d"></span>The core mechanic</div>
+    <h2 class="h">The challenge lifecycle is the product.</h2>
+    <p class="sub">Nearly everything else — dashboards, matching, notifications — exists to move a single challenge through these ten stages.</p>
+    <div class="lifecycle">
+      <div class="lc-row"><div class="lc-num"><div class="c">1</div><div class="l"></div></div><div class="lc-body"><div class="t">Submit</div><div class="d">A citizen describes a problem in plain language, with photos, video or a voice note.</div></div></div>
+      <div class="lc-row"><div class="lc-num"><div class="c">2</div><div class="l"></div></div><div class="lc-body"><div class="t">AI pre-processing</div><div class="d">Category, severity and duplicate signals are generated before a human sees it.</div></div></div>
+      <div class="lc-row"><div class="lc-num"><div class="c">3</div><div class="l"></div></div><div class="lc-body"><div class="t">Expert validation</div><div class="d">A government reviewer confirms it's real, non-duplicate, and worth publishing.</div></div></div>
+      <div class="lc-row"><div class="lc-num"><div class="c">4</div><div class="l"></div></div><div class="lc-body"><div class="t">Published &amp; matched</div><div class="d">The challenge goes live and is ranked against every university's capability profile.</div></div></div>
+      <div class="lc-row"><div class="lc-num"><div class="c">5</div><div class="l"></div></div><div class="lc-body"><div class="t">HEI accepts</div><div class="d">A university claims the challenge and forms a faculty-led student team.</div></div></div>
+      <div class="lc-row"><div class="lc-num"><div class="c">6</div><div class="l"></div></div><div class="lc-body"><div class="t">Solution proposed</div><div class="d">The team turns the brief into a proposal and requests industry input.</div></div></div>
+      <div class="lc-row"><div class="lc-num"><div class="c">7</div><div class="l"></div></div><div class="lc-body"><div class="t">Industry matched</div><div class="d">A partner offers funding, hardware, or manufacturing support.</div></div></div>
+      <div class="lc-row"><div class="lc-num"><div class="c">8</div><div class="l"></div></div><div class="lc-body"><div class="t">Prototype &amp; pilot</div><div class="d">The solution is built and tested in the field, in the district that raised it.</div></div></div>
+      <div class="lc-row"><div class="lc-num"><div class="c">9</div><div class="l"></div></div><div class="lc-body"><div class="t">Deployment</div><div class="d">The piloted fix is rolled out beyond the original village or ward.</div></div></div>
+      <div class="lc-row"><div class="lc-num"><div class="c">10</div></div><div class="lc-body"><div class="t">Impact measured</div><div class="d">People benefited, cost saved and time-to-resolution recorded against the original report.</div></div></div>
+    </div>
+  </section>
+
+  <!-- CITIZEN APP -->
+  <section id="citizen">
+    <div class="grid2">
+      <div>
+        <div class="pill"><span class="d"></span>Entry point</div>
+        <h2 class="h">Ask nothing technical on the citizen side.</h2>
+        <p class="sub">Never ask someone to "describe the technological intervention required." Ask what's wrong, in their own words — the platform translates it into a structured brief afterwards.</p>
+        <p style="font-size:13.5px; margin-top:20px;"><strong style="color:var(--ink); font-family:'Space Grotesk'; font-weight:600;">Captured per report:</strong> title, description, category, exact location, evidence (photo / video / voice), who's affected, and how often it happens.</p>
+      </div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="ph-eyebrow">Report a problem</div>
+          <h4>What's going wrong?</h4>
+          <div class="phone-field">"Our handpump water turns dirty every monsoon and children are getting sick."</div>
+          <div class="phone-row">
+            <div class="phone-field">📍 Village / Ward</div>
+            <div class="phone-field">🎤 Voice note</div>
+          </div>
+          <div class="phone-chips">
+            <span>Individual</span><span class="on">Village</span><span>Multiple villages</span><span>District</span>
+          </div>
+          <div class="phone-cta">Submit report</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- AI ENGINE -->
+  <section id="ai-engine">
+    <div class="pill"><span class="d"></span>AI problem intelligence</div>
+    <h2 class="h">One raw sentence becomes a structured brief.</h2>
+    <p class="sub">This is what separates a complaint log from a research pipeline — every submission becomes something a university department can actually evaluate.</p>
+    <div class="pipeline">
+      <span class="pipe-chip">Raw submission</span><span class="pipe-sep">→</span>
+      <span class="pipe-chip">Speech-to-text</span><span class="pipe-sep">→</span>
+      <span class="pipe-chip">Translation</span><span class="pipe-sep">→</span>
+      <span class="pipe-chip">Classification</span><span class="pipe-sep">→</span>
+      <span class="pipe-chip">Severity scoring</span><span class="pipe-sep">→</span>
+      <span class="pipe-chip">Duplicate check</span><span class="pipe-sep">→</span>
+      <span class="pipe-chip">University match</span>
+    </div>
+    <div class="transform">
+      <div class="t-in">"Our village handpump water becomes dirty during the rainy season and children are getting sick."</div>
+      <div class="t-mid">→</div>
+      <div class="t-out">
+        <dl>
+          <dt>DOMAIN</dt><dd>Water &amp; sanitation</dd>
+          <dt>SEVERITY</dt><dd>High</dd>
+          <dt>AFFECTED</dt><dd>~500 people</dd>
+          <dt>SDG LINK</dt><dd>SDG 6 · SDG 3</dd>
+          <dt>EXPERTISE</dt><dd>Water resources, environmental engineering, public health</dd>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <!-- LANGUAGE -->
+  <section id="language">
+    <div class="pill"><span class="d"></span>Access, not just translation</div>
+    <h2 class="h">A problem shouldn't go unheard because of the language it's told in.</h2>
+    <p class="sub">Submissions are accepted in the languages people actually speak across the state, and the original wording is preserved alongside the standardised version.</p>
+    <div class="lang-row">
+      <span>Hindi</span><span>English</span><span>Nagpuri</span><span>Santali</span><span>Mundari</span><span>Ho</span><span>Kurukh</span>
+    </div>
+  </section>
+
+  <!-- DUPLICATES -->
+  <section id="duplicates">
+    <div class="pill"><span class="d"></span>Signal over noise</div>
+    <h2 class="h">300 reports of one problem shouldn't become 300 projects.</h2>
+    <p class="sub">Similar submissions are clustered under one master challenge — which also gives government a truer read on scale.</p>
+    <div class="merge">
+      <div class="reports">
+        <div class="r"><span>Challenge #1024</span><span>Village X</span></div>
+        <div class="r"><span>Challenge #1138</span><span>Village X</span></div>
+        <div class="r"><span>Challenge #1292</span><span>Ward 4</span></div>
+        <div class="r"><span>Challenge #1417</span><span>Ward 4</span></div>
+      </div>
+      <div class="m-arrow">→</div>
+      <div class="master">
+        <div class="big">Master #742</div>
+        <div class="cap">742 reports · 1,843 affected citizens · 4 panchayats</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MATCHING -->
+  <section id="matching">
+    <div class="pill"><span class="d"></span>University matching engine</div>
+    <h2 class="h">Every recommendation is explainable, never a black box.</h2>
+    <div class="grid2" style="margin-top:44px; align-items:start;">
+      <div>
+        <p class="sub">Each university carries a capability profile — departments, labs, faculty, past projects. A challenge is scored against every profile and ranked.</p>
+        <div class="weight-bar">
+          <div style="width:30%; background:#3B3BFF;">30</div>
+          <div style="width:20%; background:#5C5CFF;">20</div>
+          <div style="width:15%; background:#7D7DFF;">15</div>
+          <div style="width:10%; background:#9E9EFF;">10</div>
+          <div style="width:10%; background:#FF5A3C;">10</div>
+          <div style="width:10%; background:#FF8266;">10</div>
+          <div style="width:5%; background:#B6FF3B; color:#101014;">5</div>
+        </div>
+        <div class="weight-legend">
+          <div class="li"><span class="sw" style="background:#3B3BFF;"></span>Research expertise</div>
+          <div class="li"><span class="sw" style="background:#5C5CFF;"></span>Faculty expertise</div>
+          <div class="li"><span class="sw" style="background:#7D7DFF;"></span>Lab capability</div>
+          <div class="li"><span class="sw" style="background:#9E9EFF;"></span>Prior projects</div>
+          <div class="li"><span class="sw" style="background:#FF5A3C;"></span>Student capability</div>
+          <div class="li"><span class="sw" style="background:#FF8266;"></span>Geographic proximity</div>
+          <div class="li"><span class="sw" style="background:#B6FF3B;"></span>Industry connections</div>
+        </div>
+      </div>
+      <div>
+        <div class="match-bars">
+          <div class="match-row"><span class="u">University A</span><div class="track"><div class="fill" style="width:94%"></div></div><span class="p">94%</span></div>
+          <div class="match-row"><span class="u">University B</span><div class="track"><div class="fill" style="width:87%; background:#7D7DFF;"></div></div><span class="p">87%</span></div>
+          <div class="match-row"><span class="u">University C</span><div class="track"><div class="fill" style="width:71%; background:#FF5A3C;"></div></div><span class="p">71%</span></div>
+          <div class="match-row"><span class="u">University D</span><div class="track"><div class="fill" style="width:64%; background:#C7C7D1;"></div></div><span class="p">64%</span></div>
+        </div>
+        <div class="why">
+          <div class="t">Why University A ranks first</div>
+          <ul>
+            <li>Agricultural engineering department on record</li>
+            <li>Active IoT research lab</li>
+            <li>Soil science faculty available</li>
+            <li>Existing agri-tech startup incubated</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GOV DASHBOARD -->
+  <section id="gov">
+    <div class="pill"><span class="d"></span>State-level view</div>
+    <h2 class="h">Where the platform earns its place at the state level.</h2>
+    <p class="sub">One screen answers "how much of the backlog is actually moving" — by domain, by district, by stage.</p>
+    <div class="stat-bento">
+      <div class="c"><div class="n">18,426</div><div class="l">challenges reported</div></div>
+      <div class="c"><div class="n">9,731</div><div class="l">validated</div></div>
+      <div class="c"><div class="n">2,184</div><div class="l">under development</div></div>
+      <div class="c"><div class="n">486</div><div class="l">deployed</div></div>
+    </div>
+    <div class="domain-list">
+      <div class="domain-row"><span class="n">Agriculture</span><div class="track"><div class="fill" style="width:100%"></div></div><span class="v">4,210</span></div>
+      <div class="domain-row"><span class="n">Healthcare</span><div class="track"><div class="fill" style="width:82%"></div></div><span class="v">3,450</span></div>
+      <div class="domain-row"><span class="n">Education</span><div class="track"><div class="fill" style="width:64%"></div></div><span class="v">2,690</span></div>
+      <div class="domain-row"><span class="n">Water</span><div class="track"><div class="fill" style="width:57%"></div></div><span class="v">2,405</span></div>
+      <div class="domain-row"><span class="n">Environment</span><div class="track"><div class="fill" style="width:42%"></div></div><span class="v">1,765</span></div>
+      <div class="domain-row"><span class="n">Infrastructure</span><div class="track"><div class="fill" style="width:35%"></div></div><span class="v">1,470</span></div>
+      <div class="domain-row"><span class="n">Livelihood</span><div class="track"><div class="fill" style="width:28%"></div></div><span class="v">1,180</span></div>
+    </div>
+    <div class="status-row">
+      <span class="done">Submitted</span><span class="done">Under review</span><span class="done">Validated</span>
+      <span class="now">Matched</span><span>Solution development</span><span>Prototype</span><span>Pilot</span><span>Deployed</span>
+    </div>
+  </section>
+
+  <!-- IMPACT (dark card) -->
+  <section class="impact-section" id="impact">
+    <div class="pill"><span class="d"></span>Beyond "project completed"</div>
+    <h2 class="h">The platform should say what actually changed.</h2>
+    <p class="sub">A closed project isn't the end state — a measured before-and-after is. This is what lets government point to real social return, not just activity.</p>
+    <div class="impact-grid">
+      <div class="impact-col">
+        <div class="h">BEFORE</div>
+        <div class="m"><span>Water wastage</span><span class="v">40%</span></div>
+        <div class="m"><span>Avg. resolution time</span><span class="v">—</span></div>
+        <div class="m"><span>Villages covered</span><span class="v">1</span></div>
+      </div>
+      <div class="impact-col after">
+        <div class="h">AFTER</div>
+        <div class="m"><span>Water wastage</span><span class="v">17%</span></div>
+        <div class="m"><span>Avg. resolution time</span><span class="v">74 days</span></div>
+        <div class="m"><span>Villages covered</span><span class="v">8</span></div>
+        <div class="m"><span>People benefited</span><span class="v">12,400</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ARCHITECTURE -->
+  <section id="architecture">
+    <div class="pill"><span class="d"></span>Under the hood</div>
+    <h2 class="h">Straightforward architecture — the intelligence is in the data model.</h2>
+    <p class="sub">Start with an LLM plus conventional matching logic; a bespoke model isn't needed on day one.</p>
+    <div class="arch">
+      <div class="arch-row"><div class="k">FRONTEND</div><div class="items"><span>Web app</span><span>Mobile / PWA</span></div></div>
+      <div class="arch-row"><div class="k">API GATEWAY</div><div class="items"><span>Auth</span><span>Rate limiting</span><span>Routing</span></div></div>
+      <div class="arch-row"><div class="k">SERVICES</div><div class="items"><span>Challenge service</span><span>Identity service</span><span>Project service</span></div></div>
+      <div class="arch-row"><div class="k">AI ENGINE</div><div class="items"><span>Classification</span><span>Deduplication</span><span>Priority scoring</span><span>Matching</span></div></div>
+      <div class="arch-row"><div class="k">DATA</div><div class="items"><span>PostgreSQL</span><span>pgvector</span><span>File storage</span></div></div>
+    </div>
+    <div class="stack-grid">
+      <div class="stack-item"><div class="k">FRONTEND</div><div class="v">Next.js</div><div class="d">React, TypeScript, Tailwind, Leaflet for the district map.</div></div>
+      <div class="stack-item"><div class="k">BACKEND</div><div class="v">FastAPI</div><div class="d">Python end to end — same language as the AI services.</div></div>
+      <div class="stack-item"><div class="k">DATABASE</div><div class="v">Postgres + pgvector</div><div class="d">Semantic matching without a separate vector database.</div></div>
+      <div class="stack-item"><div class="k">DEPLOY</div><div class="v">Vercel + Render/AWS</div><div class="d">Frontend and backend split cleanly; S3-compatible storage.</div></div>
+    </div>
+  </section>
+
+  <!-- ROADMAP -->
+  <section id="roadmap">
+    <div class="pill"><span class="d"></span>Sequencing</div>
+    <h2 class="h">Build the spine first. Everything else is an addition.</h2>
+    <div class="roadmap">
+      <div class="rm"><div class="p">PHASE 1 — MVP</div><div class="t">The spine</div><ul><li>Citizen submits</li><li>Admin reviews</li><li>AI categorises</li><li>University matches &amp; accepts</li></ul></div>
+      <div class="rm"><div class="p">PHASE 2</div><div class="t">Ecosystem</div><ul><li>Industry portal</li><li>Faculty profiles</li><li>Student teams</li><li>Notifications &amp; maps</li></ul></div>
+      <div class="rm"><div class="p">PHASE 3</div><div class="t">Advanced AI</div><ul><li>Multilingual voice intake</li><li>Semantic duplicate detection</li><li>Solution recommendation</li></ul></div>
+      <div class="rm"><div class="p">PHASE 4</div><div class="t">Full ecosystem</div><ul><li>Funding marketplace</li><li>Startup incubation &amp; IP</li><li>Government procurement APIs</li></ul></div>
+    </div>
+  </section>
+
+  <!-- CLOSING -->
+  <section class="closing-wrap" id="close" style="border-bottom:none;">
+    <div class="pill" style="background:rgba(255,255,255,0.08); color:var(--lime);"><span class="d" style="background:var(--lime);"></span>The pitch, stated plainly</div>
+    <h2>Don't describe it as a place to file complaints.</h2>
+    <p>There are already enough of those. What makes this worth building is the second half of the sentence.</p>
+    <div class="pitch-row">
+      <div class="pitch"><div class="t">WEAKER FRAME</div><p>"A portal where citizens submit complaints."</p></div>
+      <div class="pitch strong"><div class="t">STRONGER FRAME</div><p>"An AI-enabled pipeline that turns community problems into university-led research and industry-backed, deployable solutions."</p></div>
+    </div>
+    <div class="final-line">A demo of one report — from a citizen's photo to a funded prototype — carries almost the entire concept.</div>
+  </section>
+
+</main>
+
+<footer>
+  <span>Jharkhand Innovation Pipeline</span>
+  <span>Platform blueprint</span>
+</footer>
+
+<script>
+  // scroll progress
+  const bar = document.getElementById('progressBar');
+  const onScroll = () => {
+    const h = document.documentElement;
+    const pct = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+    bar.style.width = pct + '%';
+  };
+  window.addEventListener('scroll', onScroll, {passive:true});
+
+  // dot nav active state
+  const dots = document.querySelectorAll('.dotnav a');
+  const targets = Array.from(dots).map(d => document.querySelector(d.getAttribute('href')));
+  const setActive = () => {
+    let idx = 0;
+    const y = window.scrollY + 200;
+    targets.forEach((t,i) => { if (t && t.offsetTop <= y) idx = i; });
+    dots.forEach((d,i) => d.classList.toggle('active', i === idx));
+  };
+  window.addEventListener('scroll', setActive, {passive:true});
+  setActive(); onScroll();
+</script>
+
+</body>
+</html>
